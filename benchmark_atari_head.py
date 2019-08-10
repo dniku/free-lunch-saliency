@@ -10,12 +10,12 @@ import numpy as np
 import pandas as pd
 import streaming_image_env
 from gym.envs.registration import registry as env_registry
-from tqdm.auto import tqdm
 
 from metrics import nss, kldiv, auc_shuffled
 
 import run_baselines
 from utils import maybe_tqdm, assert_equal
+from visualization import upscale_smap
 
 # Prevent PyCharm from removing this import
 assert hasattr(streaming_image_env, 'StreamingImageEnv')
@@ -116,9 +116,8 @@ def auc_shuffled_many(saliency_maps, fixation_maps, random_state=None, progress=
     gen = np.random.RandomState(seed=random_state)
     result = []
 
-    it = enumerate(zip(saliency_maps, fixation_maps))
-    if progress:
-        it = tqdm(it, total=len(saliency_maps), postfix='evaluating sAUC')
+    tqdm = maybe_tqdm(progress)
+    it = tqdm(enumerate(zip(saliency_maps, fixation_maps)), total=len(saliency_maps), postfix='evaluating sAUC')
 
     for i, (smap, fmap) in it:
         if np.allclose(fmap, 0) or not np.isfinite(smap).all():
@@ -148,9 +147,8 @@ def render_fixation_video(trial_number: int, atari_head: AtariHead, progress=Fal
 
     frame_stream = streaming_image_env.read_frames(atari_head.dataset_dir / run['frames'])
 
-    it = zip(frame_stream, df_gazes['gaze_positions'])
-    if progress:
-        it = tqdm(it, total=run['NumberOfFrames'], postfix='writing video')
+    tqdm = maybe_tqdm(progress)
+    it = tqdm(zip(frame_stream, df_gazes['gaze_positions']), total=run['NumberOfFrames'], postfix='writing video')
 
     for frame, frame_gazes in it:
         raw_fixation_map, prc_fixation_map = make_fixation_map([frame_gazes])
@@ -246,6 +244,9 @@ def model_trial_metrics(
         for metric in ['nss', 'kldiv']
     }
 
+    if not processed_obs:
+        saliency_maps = [upscale_smap(smap[np.newaxis, ...])[0] for smap in saliency_maps]
+
     prg = maybe_tqdm(progress)
     for smap, fmap in prg(zip(saliency_maps, raw_fixation_maps), total=len(raw_observations), postfix='computing NSS & KL-div'):
         if np.allclose(fmap, 0) or not np.isfinite(smap).all():
@@ -270,8 +271,7 @@ def model_trial_metrics(
 
 
 def model_metrics(
-        commit_hash: str,
-        experiments_dir: Path,
+        experiment_dir: Path,
         atari_head: AtariHead,
         eval_seed: int,
         processed_obs: bool,
@@ -279,21 +279,15 @@ def model_metrics(
     records = []
 
     d, model = run_baselines.load_model(
-        experiments_dir / commit_hash,
+        experiment_dir,
         eval_seed,
     )
 
     game = d['env_name'][:-len('NoFrameskip-v4')]
     network = d['network']
 
-    it = atari_head.game_trials(game)
-    if progress:
-        it = tqdm(
-            it,
-            postfix=f'runs: {game} {network} {commit_hash}',
-        )
-
-    for trial_number in it:
+    tqdm = maybe_tqdm(progress)
+    for trial_number in tqdm(atari_head.game_trials(game), postfix=f'runs: {game} {network}'):
         metrics = model_trial_metrics(
             model,
             d['network'],
@@ -302,31 +296,26 @@ def model_metrics(
             eval_seed=eval_seed,
             processed_obs=processed_obs,
         )
-        records.append({
-            'TrialNumber': trial_number,
-            'Game': game,
-            'model': commit_hash,
-            'network': network,
-            'metrics': metrics,
-        })
+        records.append(OrderedDict([
+            ('trial_number', trial_number),
+            ('metrics', metrics),
+        ]))
 
     return records
 
 
-def main(commit_hash: str,
-         experiments_dir: Path,
+def main(experiment_dir: Path,
          atari_head_dir: Path,
          eval_seed: int,
          processed_obs: bool,
          progress: bool,
          output_dir: Path):
-    output_path = output_dir / f'{commit_hash}.pkl'
+    output_path = output_dir / 'saliency.pkl'
     assert not output_path.exists()
 
     atari_head = AtariHead(atari_head_dir)
     records = model_metrics(
-        commit_hash,
-        experiments_dir,
+        experiment_dir,
         atari_head,
         eval_seed,
         processed_obs,
@@ -344,8 +333,7 @@ if __name__ == '__main__':
     np.seterr(divide='raise', over='raise', under='ignore', invalid='raise')
 
     parser = argparse.ArgumentParser(description='Compute saliency metrics on trained models using Atari-HEAD dataset')
-    parser.add_argument('--commit-hash', type=str, help='Commit hash corresponding to the trained model', required=True)
-    parser.add_argument('--experiments-dir', type=Path, help='Directory with experiment results', required=True)
+    parser.add_argument('--experiment-dir', type=Path, help='Path to directory with model.pkl and config.json', required=True)
     parser.add_argument('--atari-head-dir', type=Path, help='Directory with Atari-HEAD dataset', required=True)
     parser.add_argument('--eval-seed', type=int, help='Seed to pass to env initializers (should not affect anything)', default=1000)
     parser.add_argument('--processed-obs', action='store_true', help='Compute metrics on preprocessed obs instead of raw ones')
@@ -354,8 +342,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(
-        args.commit_hash,
-        args.experiments_dir,
+        args.experiment_dir,
         args.atari_head_dir,
         args.eval_seed,
         args.processed_obs,

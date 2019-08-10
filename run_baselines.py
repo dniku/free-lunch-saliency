@@ -225,7 +225,7 @@ def load_model(experiment_path, seed):
     return d, baselines.run.main([str(v) for v in [
         '--env', d['env_name'],
         '--seed', seed,
-        '--alg', d['alg_name'],
+        '--alg', 'ppo2',
         '--num_timesteps', 0,
         '--network', d['network'],
         '--num_env', 1,
@@ -240,8 +240,7 @@ if __name__ == '__main__':
     )
 
     parser = argparse.ArgumentParser(description='Evaluate trained models')
-    parser.add_argument('--commit-hash', type=str, help='Commit hash corresponding to the trained model', required=True)
-    parser.add_argument('--experiments-dir', type=Path, help='Directory with experiment results', required=True)
+    parser.add_argument('--experiment-dir', type=Path, help='Path to directory with model.pkl and config.json', required=True)
     parser.add_argument('--num-env', type=int, help='Number of evaluation envs', default=4)
     parser.add_argument('--evals-per-env', type=int, help='Number of full episodes to run on each env', default=1)
     parser.add_argument('--eval-seed', type=int, help='Seed to pass to env initializers', default=1000)
@@ -253,10 +252,8 @@ if __name__ == '__main__':
     parser.add_argument('--output-dir', type=Path, help='Directory to write evaluation records into')
     args = parser.parse_args()
 
-    logging.debug(f'Loading model with commit_hash={args.commit_hash}...')
-
     d, model = load_model(
-        args.experiments_dir / args.commit_hash,
+        args.experiment_dir,
         args.eval_seed,
     )
 

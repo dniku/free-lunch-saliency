@@ -52,13 +52,11 @@ ENTRYPOINT ["fixuid", "-q"]
 ENV PATH="/home/$USERNAME/.local/bin:${PATH}"
 
 RUN pip install --user \
+        numpy==1.16.2 \
         matplotlib==3.0.2 \
         tensorflow-gpu==1.12.0 \
         torch==1.0.1 \
-        git+git://github.com/lanpa/tensorboardX.git@59bdd23 \
-        moviepy==0.2.3.5 \
         'gym[atari]==0.10.11' \
-        torchsummary==1.5.1 \
         pandas==0.24.2 \
         scikit-learn==0.20.3 \
         scikit-image==0.15.0

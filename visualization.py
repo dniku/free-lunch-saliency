@@ -86,6 +86,13 @@ def render_frame(obs, smap, fmap=None, processed_obs=False):
     return frame
 
 
+def upscale_smap(smap):
+    return np.stack([
+        skimage.transform.resize(smap[bb, ...], (210, 160))
+        for bb in range(smap.shape[0])
+    ])
+
+
 def render_perception(raw_observations: List[np.ndarray], prc_observations: List[np.ndarray],
                       saliency_maps: List[np.ndarray], raw_fixation_maps: List[np.ndarray] = None,
                       prc_fixation_maps: List[np.ndarray] = None):
@@ -103,10 +110,7 @@ def render_perception(raw_observations: List[np.ndarray], prc_observations: List
     if raw_observations:
         num_env, rh, rw = raw_observations[0].shape[:3]
 
-        upscaled_maps = (
-            np.stack([skimage.transform.resize(smap[bb, ...], (rh, rw)) for bb in range(num_env)])
-            for smap in saliency_maps
-        )
+        upscaled_maps = (upscale_smap(smap) for smap in saliency_maps)
 
         if prc_observations:
             for frame_raw, frame_prc in zip(
