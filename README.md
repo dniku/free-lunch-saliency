@@ -75,6 +75,18 @@ Parameters:
  *  `TRAIN_SEED` can be any integer. We used `1`, `9`, `17`, `25`, `33`.
  *  `NUM_TIMESTEPS` can be any integer ≥ `1024`. We used `50000000`. Use `1024` for testing.
 
+Output will be saved in the directory specified by `--output-dir` in the following format:
+
+```
+logs
+├── 0.N.monitor.csv  # logs for each of the 8 training environments
+├── log.txt          # plain-text log with metrics (also printed to stdout)
+└── progress.csv     # CSV log with metrics
+tb
+└── events.out.tfevents.<timestamp>.<hostname>  # Tensorboard log
+model.pkl            # trained model in Baselines format
+```
+
 ### Performance evaluation
 
 Assuming that you downloaded the models to `~/data/fl-saliency`:
@@ -98,6 +110,31 @@ Parameters:
 
  *  `NUM_ENV`: how many environments to spawn in parallel. We used `16`. Use `1` or `2` for testing.
  *  `EVALS_PER_ENV`: how many times to evaluate in each environment. We used `512`. Use `1` for testing.
+ *  `--raw-obs`: save a video called `perception.mkv` with raw observations and an attention overlay.
+ *  `--processed-obs`: save a video called `perception.mkv` with preprocessed observations and an attention overlay.
+
+If you pass both `--raw-obs` and `--processed-obs`, raw and preprocessed observations will be stacked vertically.
+
+Evaluation results are saved in `results.json`. Example:
+
+```json
+{
+    "rewards": [
+        864.0
+    ],
+    "lengths": [
+        6849.0
+    ],
+    "elapsed_time": [
+        25.020986557006836
+    ],
+    "done_per_env": [
+        1
+    ]
+}
+```
+
+`rewards`, `lengths`, and `elapsed_time` come from Baselines. Each entry corresponds to a finished episode. `lengths` contains number of steps while `elapsed_time` is the time since the environment was spawned, in seconds. `done_per_env` has an entry for each environment and counts how many episodes were finished there by the time evaluation is over.
 
 ### Saliency evaluation
 
