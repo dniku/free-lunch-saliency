@@ -94,7 +94,7 @@ Assuming that you downloaded the models to `~/data/fl-saliency`:
 ```bash
 docker run \
     -v $(pwd):/home/docker/fl-saliency \
-    -v ~/data/fl-saliency/Breakout.cnn_sparse_fls/01/:/home/docker/experiment \
+    -v ~/data/fl-saliency/Breakout.cnn_sparse_fls/01/:/home/docker/experiment:ro \
     -v /tmp/fl-saliency:/home/docker/out \
     --gpus all --user=$(id -u):$(id -g) --rm -it \
     fl-saliency \
