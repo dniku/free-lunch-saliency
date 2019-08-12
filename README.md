@@ -14,7 +14,13 @@ Trained models are available [here](https://yadi.sk/d/vOk5JoP0208kqg). Directory
     └── saliency.pkl  # only for cnn{,_daqn,_rsppo,_sparse_fls,_sparse_fls_pool,_dense_fls}
 ```
 
-Building Docker image:
+##### Getting Docker image
+
+```bash
+docker pull dniku/fl-saliency
+```
+
+Alternatively, you can build it yourself:
 
 ```bash
 cat Dockerfile | docker build -t fl-saliency -
