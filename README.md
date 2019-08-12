@@ -28,8 +28,15 @@ cat Dockerfile | docker build -t fl-saliency -
 
 ### Training
 
+Create output directory with your user:
+
 ```bash
 mkdir /tmp/fl-saliency
+```
+
+Run training via Docker:
+
+```bash
 docker run \
     -v $(pwd):/home/docker/fl-saliency \
     -v /tmp/fl-saliency:/home/docker/out \
