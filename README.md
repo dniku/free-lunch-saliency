@@ -14,7 +14,7 @@ Trained models are available [here](https://yadi.sk/d/vOk5JoP0208kqg). Directory
     └── saliency.pkl  # only for cnn{,_daqn,_rsppo,_sparse_fls,_sparse_fls_pool,_dense_fls}
 ```
 
-##### Getting Docker image
+### Getting Docker image
 
 ```bash
 docker pull dniku/fl-saliency
@@ -26,7 +26,7 @@ Alternatively, you can build it yourself:
 cat Dockerfile | docker build -t fl-saliency -
 ```
 
-##### Training
+### Training
 
 ```bash
 mkdir /tmp/fl-saliency
@@ -75,7 +75,7 @@ Parameters:
  *  `TRAIN_SEED` can be any integer. We used `1`, `9`, `17`, `25`, `33`.
  *  `NUM_TIMESTEPS` can be any integer ≥ `1024`. We used `50000000`. Use `1024` for testing.
 
-##### Performance evaluation
+### Performance evaluation
 
 Assuming that you downloaded the models to `~/data/fl-saliency`:
 
@@ -99,7 +99,7 @@ Parameters:
  *  `NUM_ENV`: how many environments to spawn in parallel. We used `16`. Use `1` or `2` for testing.
  *  `EVALS_PER_ENV`: how many times to evaluate in each environment. We used `512`. Use `1` for testing.
 
-##### Saliency evaluation
+### Saliency evaluation
 
 ```bash
 docker run \
