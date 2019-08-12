@@ -103,6 +103,7 @@ docker run \
         --output-dir out \
         --num-env <NUM_ENV> \
         --evals-per-env <EVALS_PER_ENV> \
+        --max-eplen <MAX_EPLEN> \
         --progress
 ```
 
@@ -110,6 +111,7 @@ Parameters:
 
  *  `NUM_ENV`: how many environments to spawn in parallel. We used `16`. Use `1` or `2` for testing.
  *  `EVALS_PER_ENV`: how many times to evaluate in each environment. We used `512`. Use `1` for testing.
+ *  `MAX_EPLEN`: limit episode length to this many steps. Default is `108000` which corresponds to 30 minutes at 60 FPS. This is the recommended default for all games except Breakout, where models tend to enter a cycle. For Breakout, we recommend using `30000`. For testing, use `1000`.
  *  `--raw-obs`: save a video called `perception.mkv` with raw observations and an attention overlay.
  *  `--processed-obs`: save a video called `perception.mkv` with preprocessed observations and an attention overlay.
 
