@@ -23,8 +23,6 @@ RUN echo 'deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main' >> /et
         curl git unzip time \
         python3.6 \
         libglib2.0-0 libsm6 libxrender-dev \
-        ffmpeg \
-        fish man-db \
         && \
     curl https://bootstrap.pypa.io/get-pip.py | python3.6 && \
     ln -s /usr/bin/python3.6 /usr/bin/python3
@@ -100,11 +98,8 @@ RUN pip install --user \
         torch==1.0.1 \
         tqdm==4.31.1 \
         urllib3==1.24.1 \
-        Werkzeug==0.15.1
-RUN pip install --user git+https://github.com/dniku/baselines.git@0b217d2
-
-# Otherwise moviepy downloads a binary release of ffmpeg
-ENV FFMPEG_BINARY=ffmpeg
+        Werkzeug==0.15.1 && \
+    pip install --user git+https://github.com/dniku/baselines.git@0b217d2
 
 # Do not spawn dozens of threads in a shared environment
 ENV OMP_NUM_THREADS=4
@@ -113,7 +108,7 @@ ENV MKL_NUM_THREADS=6
 ENV VECLIB_MAXIMUM_THREADS=4
 ENV NUMEXPR_NUM_THREADS=6
 
-CMD fish
+CMD bash
 
 # An alternative to installing Python 3.6 from PPA is Miniconda:
 
