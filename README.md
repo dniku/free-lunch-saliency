@@ -28,6 +28,8 @@ or, alternatively, build it yourself:
 cat Dockerfile | docker build -t fl-saliency -
 ```
 
+The container is based off the official `nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04` image with additional Python 3.6 and a set of extra libraries, including a [slightly patched](https://github.com/openai/baselines/compare/6d1c6c7...dniku:0b217d2) version of OpenAI Baselines.
+
 ### Training
 
 Create output directory with your user:
