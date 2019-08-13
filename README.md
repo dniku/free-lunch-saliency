@@ -41,7 +41,7 @@ docker run \
     -v $(pwd):/home/docker/fl-saliency \
     -v /tmp/fl-saliency:/home/docker/out \
     --gpus all --user=$(id -u):$(id -g) --rm -it \
-    fl-saliency \
+    dniku/fl-saliency \
     python3 fl-saliency/train_baselines.py \
         --output-dir /home/docker/out \
         --network <NETWORK> \
@@ -104,7 +104,7 @@ docker run \
     -v ~/data/fl-saliency/Breakout.cnn_sparse_fls/01/:/home/docker/experiment:ro \
     -v /tmp/fl-saliency:/home/docker/out \
     --gpus all --user=$(id -u):$(id -g) --rm -it \
-    fl-saliency \
+    dniku/fl-saliency \
     python3 fl-saliency/run_baselines.py \
         --experiment-dir experiment \
         --output-dir out \
@@ -154,7 +154,7 @@ docker run \
     -v /tmp/fl-saliency:/home/docker/out \
     -v ~/data/atari_head:/home/docker/atari_head \
     --gpus all --user=$(id -u):$(id -g) --rm -it \
-    fl-saliency \
+    dniku/fl-saliency \
     sh -c '\
     pip3 install --user -e fl-saliency/streaming-image-env &&
     python3 fl-saliency/benchmark_atari_head.py \
