@@ -14,13 +14,15 @@ Trained models are available [here](https://yadi.sk/d/vOk5JoP0208kqg). Directory
     └── saliency.pkl  # only for cnn{,_daqn,_rsppo,_sparse_fls,_sparse_fls_pool,_dense_fls}
 ```
 
-### Getting Docker image
+### Environment
+
+The recommended way to run our code is via Docker. We provide a container that you can download:
 
 ```bash
 docker pull dniku/fl-saliency
 ```
 
-Alternatively, you can build it yourself:
+or, alternatively, build it yourself:
 
 ```bash
 cat Dockerfile | docker build -t fl-saliency -
@@ -34,7 +36,7 @@ Create output directory with your user:
 mkdir /tmp/fl-saliency
 ```
 
-Run training via Docker:
+Run training:
 
 ```bash
 docker run \
@@ -143,7 +145,7 @@ Evaluation results are saved in `results.json`. Example:
 }
 ```
 
-`rewards`, `lengths`, and `elapsed_time` come from Baselines. Each entry corresponds to a finished episode. `lengths` contains number of steps while `elapsed_time` is the time since the environment was spawned, in seconds. `done_per_env` has an entry for each environment and counts how many episodes were finished there by the time evaluation is over.
+`rewards`, `lengths`, and `elapsed_time` come from Baselines. Each entry corresponds to a finished episode. `lengths` contains the number of steps while `elapsed_time` is the time since the environment was spawned, in seconds. `done_per_env` has an entry for each environment and counts how many episodes were finished there by the time evaluation is over.
 
 ### Saliency evaluation
 
