@@ -151,6 +151,17 @@ Evaluation results are saved in `results.json`. Example:
 
 ### Saliency evaluation
 
+First, download the [Atari-HEAD](https://zenodo.org/record/2603190) dataset:
+
+```bash
+pip install --user zenodo-get
+mkdir -p ~/data/atari_head/
+cd ~/data/atari_head/
+zenodo_get.py 2603190
+```
+
+Then:
+
 ```bash
 docker run \
     -v $(pwd):/home/docker/fl-saliency \
