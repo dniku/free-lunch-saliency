@@ -171,7 +171,7 @@ docker run \
     --gpus all --user=$(id -u):$(id -g) --rm -it \
     dniku/fl-saliency \
     sh -c '\
-    pip3 install --user -e fl-saliency/streaming-image-env &&
+    pip3 install --user -e fl-saliency/streaming-image-env && \
     python3 fl-saliency/benchmark_atari_head.py \
         --experiment-dir experiment \
         --atari-head-dir atari_head \
