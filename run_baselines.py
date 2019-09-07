@@ -49,7 +49,7 @@ def run_model(model, envs, evals_per_env: int, return_raw=True, return_prc=False
     #
     # Note on terminology: for gym, "done" != "info contains reward and length".
     # Hence we run each env until it produces info with reward, length, and elapsed time.
-    for _ in tqdm(itertools.count(start=0), postfix='playing'):
+    for step in tqdm(itertools.count(start=0), postfix='playing'):
         actions, _, _, _, extra = model.step(obs)
 
         if return_raw:
@@ -80,10 +80,12 @@ def run_model(model, envs, evals_per_env: int, return_raw=True, return_prc=False
                     attention[-1][i].fill(0)
 
             if 'episode' in infos[i].keys():
+                r, l, t = [infos[i]['episode'][key] for key in 'rlt']
                 if done_per_env[i] < evals_per_env:
-                    eval_ep_stats[i, done_per_env[i], :] = [infos[i]['episode'][key] for key in 'rlt']
+                    eval_ep_stats[i, done_per_env[i], :] = r, l, t
 
                 done_per_env[i] += 1
+                logging.debug(f'done_per_env: {done_per_env} ({i:02d} changed), step: {step}, r={r}, l={l}, t={t:.2f}')
                 if done_per_env[i] == evals_per_env:
                     num_done += 1
                     if num_done < num_envs:
