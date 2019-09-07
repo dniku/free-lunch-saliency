@@ -32,7 +32,7 @@ def run_model(model, envs, evals_per_env: int, return_raw=True, return_prc=False
 
     num_envs = envs.venv.num_envs
 
-    done_evals_per_env = np.zeros(num_envs, dtype=np.int64)
+    done_per_env = np.zeros(num_envs, dtype=np.int64)
     num_done = 0
     eval_ep_stats = np.zeros(shape=(num_envs, evals_per_env, 3), dtype=np.float32)
 
@@ -71,7 +71,7 @@ def run_model(model, envs, evals_per_env: int, return_raw=True, return_prc=False
         obs, reward, done, infos = envs.step(actions)
 
         for i in range(num_envs):
-            if done_evals_per_env[i] >= evals_per_env:
+            if done_per_env[i] >= evals_per_env:
                 if return_raw:
                     raw_observations[-1][i].fill(0)
                 if return_prc:
@@ -80,29 +80,28 @@ def run_model(model, envs, evals_per_env: int, return_raw=True, return_prc=False
                     attention[-1][i].fill(0)
 
             if 'episode' in infos[i].keys():
-                if done_evals_per_env[i] < evals_per_env:
-                    eval_ep_stats[i, done_evals_per_env[i], :] = [infos[i]['episode'][key] for key in 'rlt']
+                if done_per_env[i] < evals_per_env:
+                    eval_ep_stats[i, done_per_env[i], :] = [infos[i]['episode'][key] for key in 'rlt']
 
-                done_evals_per_env[i] += 1
-                if done_evals_per_env[i] == evals_per_env:
+                done_per_env[i] += 1
+                if done_per_env[i] == evals_per_env:
                     num_done += 1
                     if num_done < num_envs:
-                        remaining_percent = done_evals_per_env[
-                                                done_evals_per_env < evals_per_env].mean() / evals_per_env * 100
+                        remaining_percent = done_per_env[done_per_env < evals_per_env].mean() / evals_per_env * 100
                         logging.info(
                             f'{num_done}/{num_envs} envs done. Remaining envs are {remaining_percent:.2f}% done.')
 
         if num_done == num_envs:
             break
 
-    assert (done_evals_per_env >= evals_per_env).all()
+    assert (done_per_env >= evals_per_env).all()
     rewards, lengths, elapsed_time = [eval_ep_stats.reshape(-1, 3)[:, i] for i in range(3)]
 
     eval_results = {
         'rewards': rewards.tolist(),
         'lengths': lengths.tolist(),
         'elapsed_time': elapsed_time.tolist(),
-        'done_per_env': done_evals_per_env.tolist(),
+        'done_per_env': done_per_env.tolist(),
     }
 
     return eval_results, raw_observations, prc_observations, attention
