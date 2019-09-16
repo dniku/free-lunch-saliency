@@ -11,7 +11,6 @@ LABEL maintainer="Dmitry Nikulin <d.nikulin@samsung.com>"
 # - Python 3.6. Support for 3.7 was introduced in Tensorflow 1.13.1.
 # - opencv-python dependencies (libglib2.0-0, libsm6, libxrender-dev)
 # - ffmpeg as a moviepy dependency
-# - fish for reducing pain in interactive session and man-db b/c fish uses apropos
 # - pip
 
 RUN echo 'deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main' >> /etc/apt/sources.list && \
@@ -116,7 +115,7 @@ CMD bash
 #ENV PATH=/root/miniconda3/bin:${PATH}
 #
 #RUN apt-get update && \
-#    apt-get install -y wget git fish
+#    apt-get install -y wget git
 #
 #RUN wget -q "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -O 'miniconda3.sh' && \
 #    bash 'miniconda3.sh' -b -p '/root/miniconda3' && \
