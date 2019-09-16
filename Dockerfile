@@ -100,27 +100,11 @@ RUN pip install --user \
         Werkzeug==0.15.1 && \
     pip install --user git+https://github.com/dniku/baselines.git@0b217d2
 
-# Do not spawn dozens of threads in a shared environment
-ENV OMP_NUM_THREADS=4
-ENV OPENBLAS_NUM_THREADS=4
-ENV MKL_NUM_THREADS=6
-ENV VECLIB_MAXIMUM_THREADS=4
-ENV NUMEXPR_NUM_THREADS=6
+# Somewhat counterintuitively, fewer threads = better performance
+ENV OMP_NUM_THREADS=4 \
+    OPENBLAS_NUM_THREADS=4 \
+    MKL_NUM_THREADS=6 \
+    VECLIB_MAXIMUM_THREADS=4 \
+    NUMEXPR_NUM_THREADS=6
 
 CMD bash
-
-# An alternative to installing Python 3.6 from PPA is Miniconda:
-
-#ARG MINICONDA3_VERSION='4.5.12'
-#ENV PATH=/root/miniconda3/bin:${PATH}
-#
-#RUN apt-get update && \
-#    apt-get install -y wget git
-#
-#RUN wget -q "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -O 'miniconda3.sh' && \
-#    bash 'miniconda3.sh' -b -p '/root/miniconda3' && \
-#    rm 'miniconda3.sh' && \
-#    conda update -y conda
-#
-#RUN conda install -y python==3.6.8 tensorflow-gpu && \
-#    conda install -y pytorch==1.0.1 -c pytorch
