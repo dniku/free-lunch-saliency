@@ -2,7 +2,7 @@
 
 Code for https://arxiv.org/abs/1908.02511.
 
-Trained models are available [here](https://yadi.sk/d/vOk5JoP0208kqg). Directory structure is as follows:
+Trained models are available [here](https://drive.google.com/drive/folders/1iAow0QqnpjF9NwQkupwo1_GC35gICfWp?usp=sharing). Directory structure is as follows:
 
 ```
 <game>.<network>
